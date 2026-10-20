@@ -24,7 +24,7 @@ const write = (dir, rel, body) => {
   return path;
 };
 
-function fakeRea(dir, { setupStatus = 'ready', healthy = true, registration = 'aligned' } = {}) {
+function fakeRea(dir, { setupStatus = 'ready', healthy = true, registration = 'aligned', extra = [] } = {}) {
   const log = join(dir, 'rea-args.log');
   const bin = join(dir, 'rea');
   const output = JSON.stringify({
@@ -32,7 +32,7 @@ function fakeRea(dir, { setupStatus = 'ready', healthy = true, registration = 'a
     healthy,
     identity: {
       cli_package_version: REA_VERSION,
-      registrations: [{ client: 'dsh', state: registration }],
+      registrations: [{ client: 'dsh', state: registration }, ...extra],
     },
   });
   writeFileSync(bin, `#!/usr/bin/env bash\nprintf '%s\\n' "$*" >> ${JSON.stringify(log)}\nprintf '%s' ${JSON.stringify(output)}\n`);
@@ -170,7 +170,7 @@ test('REA output parsing tolerates a leading log line and ANSI colour', () => {
 
 test('the generated proof is read-only and turns a missing registration into a failure', () => {
   const dir = root();
-  const aligned = fakeRea(dir, { healthy: true, registration: 'aligned' });
+  const aligned = fakeRea(dir, { healthy: true, registration: 'aligned', extra: [{ client: 'claude_code', state: 'missing' }] });
   const brokenDir = root();
   const broken = fakeRea(brokenDir, { healthy: false, registration: 'missing' });
   writeFileSync(join(dir, '.rsc.json'), JSON.stringify({ version: 1, targets: ['deepseek'], skills: ['rea'] }));

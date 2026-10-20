@@ -1,6 +1,6 @@
 {
   "name": "rea-harness",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "A private rsc meta-harness with REA: project memory, tested tools, skills, reflexes and artifact evidence for AI coding agents.",
   "type": "module",
@@ -68,6 +68,10 @@
     "url": "https://github.com/igutiez/rea-harness/issues"
   },
   "rscFixes": [
+    {
+      "fixedIn": "0.1.1",
+      "symptom": "The REA proof checked registrations for clients this project never selected, so an unrelated missing client made a healthy harness look broken"
+    },
     {
       "fixedIn": "0.1.0",
       "symptom": "REA registration is dropped when rsc rewrites the DeepSeek Harness Cordis patch; foreign inserts are now preserved"

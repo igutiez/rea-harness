@@ -419,7 +419,7 @@ if (!bin) {
 const args = [...prefix, 'doctor', ...clients.flatMap((client) => ['--client', client]), '--json'];
 const result = run(command, args);
 const report = parse(result.stdout);
-const registrations = report?.identity?.registrations || [];
+const registrations = (report?.identity?.registrations || []).filter((entry) => clients.includes(entry.client));
 const misaligned = registrations.filter((entry) => entry.state !== 'aligned');
 
 if (result.status === 0 && report?.healthy === true && misaligned.length === 0) {

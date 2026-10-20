@@ -457,7 +457,7 @@ async function runReaCommand(sub, targets) {
     say(result.ok
       ? `REA ready (${result.clients.join(', ')}).`
       : `REA is not ready (${result.clients.join(', ')}). Repair with: ${REA_INVOCATION} setup`);
-    const registrations = result.report?.identity?.registrations || [];
+    const registrations = (result.report?.identity?.registrations || []).filter((entry) => result.clients.includes(entry.client));
     for (const entry of registrations) {
       say(`  ${entry.client}: ${entry.state}${entry.remediation ? ` — ${entry.remediation}` : ''}`);
     }
