@@ -1,0 +1,34 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: validate frontmatter and bodies
+        run: npm run validate
+      - name: manifest is current
+        run: npm run manifest:check
+      - name: tests
+        run: npm test
+      - name: eval-lint
+        run: bash scripts/eval-lint.sh
+      - name: drift-check (every prose link in the catalog resolves)
+        run: npm run drift:check
+      - name: package contains the runtime and no local state
+        run: |
+          npm pack --dry-run --json > pack.json
+          node -e "const r=require('./pack.json')[0]; const names=r.files.map(f=>f.path); for (const need of ['scripts/rsc.js','scripts/lib/rea-integration.js','skills/rea/SKILL.md','skills/rea/references/native-and-artifacts.md','targets/deepseek-bridge.js','manifest.json']) if (!names.includes(need)) { console.error('missing', need); process.exit(1); } if (names.some(n => n.startsWith('.rsc/'))) { console.error('local state packed'); process.exit(1); }"
